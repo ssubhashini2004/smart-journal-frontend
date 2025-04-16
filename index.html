@@ -22,7 +22,8 @@
         </div>
 
         <div class="flex justify-center space-x-4 mb-4">
-            <button onclick="login()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+            <button id="loginBtn" onclick="login()"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
                 Login
             </button>
         </div>
@@ -39,7 +40,7 @@
             <a href="signup.html" class="text-blue-500 hover:underline">Sign up</a>
         </p>
 
-        <p id="message" class="text-sm mt-4 text-red-500"></p>
+        <p id="message" class="text-sm mt-4 text-red-500 flex justify-center items-center gap-2"></p>
     </div>
 
     <script>
@@ -49,11 +50,16 @@
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const message = document.getElementById("message");
+            const loginBtn = document.getElementById("loginBtn");
 
-            // Show loading message in blue
-            message.innerText = "Loading, please wait...";
-            message.classList.remove("text-red-500");
-            message.classList.add("text-blue-500");
+            // Show loading message and disable button
+            message.innerHTML = `<svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                 </svg>
+                                 <span class="text-blue-500">Loading, please wait...</span>`;
+            loginBtn.disabled = true;
+            loginBtn.classList.add("opacity-50", "cursor-not-allowed");
 
             try {
                 const res = await fetch(`${API}/auth/login`, {
@@ -77,6 +83,10 @@
                 message.classList.remove("text-blue-500");
                 message.classList.add("text-red-500");
             }
+
+            // Re-enable login button
+            loginBtn.disabled = false;
+            loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
         }
     </script>
 </body>
