@@ -22,8 +22,9 @@
         </div>
 
         <div class="flex justify-center space-x-4 mb-4">
-            <button onclick="login()"
-                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Login</button>
+            <button onclick="login()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                Login
+            </button>
         </div>
 
         <!-- Added sample credentials -->
@@ -44,23 +45,37 @@
     <script>
         const API = "https://server-dsgo.onrender.com/api";
 
-
         async function login() {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
+            const message = document.getElementById("message");
 
-            const res = await fetch(`${API}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+            // Show loading message in blue
+            message.innerText = "Loading, please wait...";
+            message.classList.remove("text-red-500");
+            message.classList.add("text-blue-500");
 
-            const data = await res.json();
-            if (data.userId) {
-                localStorage.setItem("userId", data.userId);
-                window.location.href = "journal.html";
-            } else {
-                document.getElementById("message").innerText = data.error;
+            try {
+                const res = await fetch(`${API}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await res.json();
+
+                if (data.userId) {
+                    localStorage.setItem("userId", data.userId);
+                    window.location.href = "journal.html";
+                } else {
+                    message.innerText = data.error;
+                    message.classList.remove("text-blue-500");
+                    message.classList.add("text-red-500");
+                }
+            } catch (error) {
+                message.innerText = "An error occurred. Please try again.";
+                message.classList.remove("text-blue-500");
+                message.classList.add("text-red-500");
             }
         }
     </script>
