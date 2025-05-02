@@ -52,10 +52,31 @@
         #sidebarOverlay.visible {
             pointer-events: auto;
         }
+        @keyframes slideIn {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(0); }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+
+        .sidebar {
+            animation: slideOut 0.3s ease forwards;
+        }
+
+        .sidebar-open .sidebar {
+            animation: slideIn 0.3s ease forwards;
+        }
     </style>
 </head>
 
 <body class="min-h-screen bg-cover bg-center" style="background-image: var(--background-image)">
+    <div id="sidebarOverlay"
+        class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 opacity-0 invisible pointer-events-none"
+        onclick="toggleSidebar()">
+    </div>
     <!-- Theme Toggle -->
     <button id="themeToggle" onclick="toggleTheme()"
         class="fixed top-4 right-20 p-2 rounded-full bg-white/90 dark:bg-gray-700 shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-600 z-50">
@@ -91,7 +112,7 @@
     </button>
 
     <!-- Sidebar -->
-    <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white dark:bg-gray-800">
+    <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white dark:bg-gray-800 z-50">
         <h2 class="text-2xl font-bold mb-8 mt-4 text-center border-b pb-4 border-white/20">Journal Menu</h2>
         <button onclick="window.location.href='new-entry.html'" class="w-full p-4 bg-white/10 hover:bg-white/20 rounded-xl transition-all flex items-center 
                    justify-start space-x-3 shadow-md hover:shadow-lg">
@@ -221,28 +242,36 @@
 
     // Sidebar Toggle
     function toggleSidebar() {
-        const body = document.body;
+        const sidebarOpen = document.body.classList.toggle('sidebar-open');
         const overlay = document.getElementById('sidebarOverlay');
-        const isOpen = body.classList.contains('sidebar-open');
         
-        if (isOpen) {
-            body.classList.remove('sidebar-open');
-            overlay.classList.add('opacity-0', 'invisible');
-            overlay.classList.remove('opacity-100', 'visible');
+        if (sidebarOpen) {
+            overlay.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'visible', 'pointer-events-auto');
         } else {
-            body.classList.add('sidebar-open');
-            overlay.classList.remove('opacity-0', 'invisible');
-            overlay.classList.add('opacity-100', 'visible');
+            overlay.classList.remove('opacity-100', 'visible', 'pointer-events-auto');
+            overlay.classList.add('opacity-0', 'invisible', 'pointer-events-none');
         }
     }
 
     // Close sidebar when pressing ESC key
+    document.addEventListener('click', (event) => {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuBtn = document.querySelector('[onclick="toggleSidebar()"]');
+        
+        if (document.body.classList.contains('sidebar-open') &&
+            !sidebar.contains(event.target) &&
+            !menuBtn.contains(event.target)) {
+            toggleSidebar();
+        }
+    });
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
             toggleSidebar();
         }
     });
-
 
 
     // Confirmation Modal
