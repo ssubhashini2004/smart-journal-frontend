@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
     <meta charset="UTF-8" />
@@ -8,26 +8,46 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="flex items-center justify-center min-h-screen bg-[url('background.png')] bg-cover bg-center bg-no-repeat">
-    <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md mx-4 backdrop-blur-sm bg-opacity-95">
+<body class="flex items-center justify-center min-h-screen">
+    <!-- Background with dark mode overlay -->
+    <div class="fixed inset-0 bg-[url('background.png')] bg-cover bg-center bg-no-repeat"></div>
+    <div class="fixed inset-0 bg-black/30 dark:bg-black/60 transition-all duration-300"></div>
+
+    <div
+        class="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-2xl w-full max-w-md mx-4 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 relative z-10">
+        <button id="themeToggle"
+            class="absolute top-4 right-4 p-2 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-sm hover:shadow-md transition-all">
+            <svg id="sunIcon" class="w-6 h-6 text-gray-800 dark:hidden" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+            </svg>
+            <svg id="moonIcon" class="w-6 h-6 text-gray-200 hidden dark:block" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
+
         <div class="flex flex-col items-center">
             <img src="logo.png" alt="Logo"
-                class="w-28 h-28 mb-6 rounded-full border-4 border-white shadow-lg transform hover:scale-105 transition-transform" />
+                class="w-28 h-28 mb-6 rounded-full border-4 border-white dark:border-gray-800 shadow-lg transform hover:scale-105 transition-transform" />
             <h1
                 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                 Smart Journal
             </h1>
-            <p class="text-gray-500 mb-8 font-medium">Your voice, your thoughts — effortlessly recorded.</p>
+            <p class="text-gray-600 dark:text-gray-300 mb-8 font-medium">Your voice, your thoughts — effortlessly
+                recorded.</p>
 
             <form class="w-full space-y-6">
                 <div>
                     <input id="email" type="email" placeholder="Email"
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 dark:text-gray-100"
                         required />
                 </div>
                 <div>
                     <input id="password" type="password" placeholder="Password"
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 dark:text-gray-100"
                         required />
                 </div>
 
@@ -37,40 +57,55 @@
                 </button>
             </form>
 
-            <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100 w-full text-center">
-                <p class="text-sm text-blue-800">
+            <div
+                class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800 w-full text-center">
+                <p class="text-sm text-blue-800 dark:text-blue-200">
                     Sample credentials:<br>
                     <span class="font-mono">example@gmail.com</span><br>
                     <span class="font-mono">Password@123</span>
                 </p>
             </div>
 
-            <p class="mt-8 text-gray-600 text-sm">
+            <p class="mt-8 text-gray-600 dark:text-gray-400 text-sm">
                 New here?
-                <a href="signup.html" class="text-blue-600 font-semibold hover:text-blue-800 transition-colors">
+                <a href="signup.html"
+                    class="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                     Create an account
                 </a>
             </p>
         </div>
 
-        <p id="message" class="text-sm mt-6 text-red-500 flex justify-center items-center gap-2"></p>
+        <p id="message" class="text-sm mt-6 flex justify-center items-center gap-2"></p>
     </div>
 
     <script>
-        const API = "https://server-dsgo.onrender.com/api";
+        // Theme toggle logic
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
 
+        // Check localStorage for theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.className = savedTheme === 'dark' ? 'dark' : '';
+
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Original login function remains the same
+        const API = "https://server-dsgo.onrender.com/api";
         async function login() {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const message = document.getElementById("message");
             const loginBtn = document.getElementById("loginBtn");
 
-            // Show loading message and disable button
-            message.innerHTML = `<svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            message.innerHTML = `<svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                  </svg>
-                                 <span class="text-blue-600">Authenticating...</span>`;
+                                 <span class="text-blue-600 dark:text-blue-400">Authenticating...</span>`;
             loginBtn.disabled = true;
             loginBtn.classList.add("opacity-50", "cursor-not-allowed");
 
@@ -87,17 +122,12 @@
                     localStorage.setItem("userId", data.userId);
                     window.location.href = "journal.html";
                 } else {
-                    message.innerText = data.error || "Invalid credentials";
-                    message.classList.remove("text-blue-600");
-                    message.classList.add("text-red-500");
+                    message.innerHTML = `<span class="text-red-500 dark:text-red-400">${data.error || 'Invalid credentials'}</span>`;
                 }
             } catch (error) {
-                message.innerText = "Connection error. Please try again.";
-                message.classList.remove("text-blue-600");
-                message.classList.add("text-red-500");
+                message.innerHTML = `<span class="text-red-500 dark:text-red-400">Connection error. Please try again.</span>`;
             }
 
-            // Re-enable login button
             loginBtn.disabled = false;
             loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
         }
