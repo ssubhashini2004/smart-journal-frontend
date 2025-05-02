@@ -182,7 +182,9 @@
             </div>
 
             <!-- Journal Entries -->
+            <div id="pdfContent" class="space-y-4">
             <div id="entries" class="space-y-4"></div>
+            </div>
         </div>
     </div>
 
@@ -212,7 +214,7 @@
     </div>
 
     <!-- Hidden PDF Container -->
-    <div id="pdfContent" class="hidden"></div>
+    
 
     <script>
     // Theme Management
@@ -316,21 +318,21 @@
         }
     }
     function exportToPDF() {
-        const pdfContainer = document.getElementById("pdfContent");
-
-        // Clone the node so it's independent of visibility settings
-        const clone = pdfContainer.cloneNode(true);
-        clone.style.display = 'block'; // Ensure it's visible for rendering
-
+        const element = document.getElementById("pdfContent");
         const opt = {
             margin: 0.5,
-            filename: 'journal_entries.pdf',
+            filename: 'journal-entries.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(clone).save();
+        // Make sure the element is visible and ready
+        if (element) {
+            html2pdf().set(opt).from(element).save();
+        } else {
+            alert("No content to export!");
+        }
     }
 
     function renderEntries() {
