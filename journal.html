@@ -318,21 +318,21 @@
         }
     }
     function exportToPDF() {
-        const element = document.getElementById("pdfContent");
+        const element = document.getElementById('entries');
         const opt = {
             margin: 0.5,
-            filename: 'journal-entries.pdf',
+            filename: 'journal_entries.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
+            html2canvas: {
+                scale: 2,
+                ignoreElements: (element) => {
+                    return element.classList && element.classList.contains('no-print');
+                }
+            },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        // Make sure the element is visible and ready
-        if (element) {
-            html2pdf().set(opt).from(element).save();
-        } else {
-            alert("No content to export!");
-        }
+        html2pdf().set(opt).from(element).save();
     }
 
     function renderEntries() {
@@ -357,12 +357,12 @@
                     </div>
                     <div class="flex gap-2">
                         <button onclick="editEntry('${entry._id}', this)" 
-                            class="px-3 py-1.5 bg-purple-100 dark:bg-purple-800 hover:bg-purple-200 dark:hover:bg-purple-700 
+                            class="no-print px-3 py-1.5 bg-purple-100 dark:bg-purple-800 hover:bg-purple-200 dark:hover:bg-purple-700 
                                    text-purple-600 dark:text-purple-200 rounded-lg transition-colors">
                             Edit
                         </button>
                         <button onclick="showConfirmation('${entry._id}')" 
-                            class="px-3 py-1.5 bg-red-100 dark:bg-red-800 hover:bg-red-200 dark:hover:bg-red-700 
+                            class="no-print px-3 py-1.5 bg-red-100 dark:bg-red-800 hover:bg-red-200 dark:hover:bg-red-700 
                                    text-red-600 dark:text-red-200 rounded-lg transition-colors">
                             Delete
                         </button>
