@@ -8,58 +8,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="flex items-center justify-center min-h-screen bg-[url('background.png')] bg-cover bg-center bg-no-repeat">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
-        <img src="logo.png" alt="Logo" class="w-24 h-24 mx-auto mb-4 rounded-full shadow-md" />
-        <h2 class="text-3xl font-bold mb-6">Smart Journal</h2>
-        <p class="text-sm mb-6 text-gray-600 italic">Your voice, your thoughts — effortlessly recorded.</p>
-
-        <div class="mb-4 text-left">
-            <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
-        </div>
-        <div class="mb-4 text-left">
-            <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded" />
+<body
+    class="min-h-screen bg-[url('background.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center px-4">
+    <div class="bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="flex flex-col items-center">
+            <img src="logo.png" alt="Smart Journal Logo"
+                class="w-24 h-24 mb-4 rounded-full shadow-md border border-gray-200" />
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-2">Smart Journal</h1>
+            <p class="text-gray-500 italic text-sm mb-6 text-center">Your voice, your thoughts — effortlessly recorded.
+            </p>
         </div>
 
-        <div class="flex justify-center space-x-4 mb-4">
-            <button id="loginBtn" onclick="login()"
-                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-                Login
-            </button>
+        <div class="space-y-4 mb-6">
+            <input id="email" type="email" placeholder="Email"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <input id="password" type="password" placeholder="Password"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
         </div>
 
-        <!-- Added sample credentials -->
-        <div class="mb-4 text-sm text-gray-500 italic">
-            Sample credentials for testing and viewing:<br>
-            Email: example@gmail.com<br>
-            Password: Password@123
+        <button id="loginBtn" onclick="login()"
+            class="w-full bg-green-500 hover:bg-green-600 transition-colors duration-300 text-white font-semibold py-2 rounded-xl shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed">
+            Login
+        </button>
+
+        <div class="text-sm text-gray-500 italic mt-6 p-3 bg-gray-100 rounded-xl">
+            Sample credentials for testing:<br />
+            Email: <span class="font-medium">example@gmail.com</span><br />
+            Password: <span class="font-medium">Password@123</span>
         </div>
 
-        <p class="text-sm">
+        <p class="text-sm text-center mt-4">
             Don't have an account?
-            <a href="signup.html" class="text-blue-500 hover:underline">Sign up</a>
+            <a href="signup.html" class="text-blue-600 hover:underline font-medium">Sign up</a>
         </p>
 
-        <p id="message" class="text-sm mt-4 text-red-500 flex justify-center items-center gap-2"></p>
+        <p id="message" class="text-sm mt-4 flex justify-center items-center gap-2 text-center h-6"></p>
     </div>
 
     <script>
         const API = "https://server-dsgo.onrender.com/api";
 
         async function login() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
             const message = document.getElementById("message");
             const loginBtn = document.getElementById("loginBtn");
 
-            // Show loading message and disable button
-            message.innerHTML = `<svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                 </svg>
-                                 <span class="text-blue-500">Loading, please wait...</span>`;
+            message.innerHTML = `
+        <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"></path>
+        </svg>
+        <span class="text-blue-500">Logging in...</span>
+      `;
             loginBtn.disabled = true;
-            loginBtn.classList.add("opacity-50", "cursor-not-allowed");
 
             try {
                 const res = await fetch(`${API}/auth/login`, {
@@ -74,19 +77,13 @@
                     localStorage.setItem("userId", data.userId);
                     window.location.href = "journal.html";
                 } else {
-                    message.innerText = data.error;
-                    message.classList.remove("text-blue-500");
-                    message.classList.add("text-red-500");
+                    message.innerHTML = `<span class="text-red-500">${data.error}</span>`;
                 }
-            } catch (error) {
-                message.innerText = "An error occurred. Please try again.";
-                message.classList.remove("text-blue-500");
-                message.classList.add("text-red-500");
+            } catch (err) {
+                message.innerHTML = `<span class="text-red-500">Something went wrong. Try again.</span>`;
             }
 
-            // Re-enable login button
             loginBtn.disabled = false;
-            loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
         }
     </script>
 </body>
