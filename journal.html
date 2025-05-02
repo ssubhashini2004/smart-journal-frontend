@@ -96,7 +96,7 @@
             <span class="font-medium">View Journals</span>
         </button>
         <div class="mt-auto pt-8 border-t border-white/20">
-            <button onclick="logout()" class="w-full p-4 bg-red-400/90 hover:bg-red-500/90 text-white rounded-xl transition-all 
+            <button onclick="signOut()" class="w-full p-4 bg-red-400/90 hover:bg-red-500/90 text-white rounded-xl transition-all 
                        flex items-center justify-start space-x-3 shadow-md hover:shadow-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -209,8 +209,12 @@
 
     // Sidebar Toggle
     function toggleSidebar() {
-        document.body.classList.toggle('sidebar-open');
+        const body = document.body;
+        const overlay = document.getElementById('sidebarOverlay');
+        body.classList.toggle('sidebar-open');
+        overlay.style.display = body.classList.contains('sidebar-open') ? 'block' : 'none';
     }
+
 
     // Confirmation Modal
     let entryToDelete = null;
