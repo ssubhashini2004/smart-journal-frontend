@@ -5,32 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Journal Entries</title>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gray: {
-                            800: '#1f2937',
-                            700: '#374151'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
     <style>
-        :root {
-            --background-image: url('background1.png');
-        }
-
-        .dark {
-            --background-image: url('background.png');
-        }
-
         .sidebar {
             background: linear-gradient(180deg, #4f46e5 0%, #6366f1 100%);
             width: 280px;
@@ -40,137 +17,123 @@
             z-index: 999;
         }
 
-        .dark .sidebar {
-            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
-        }
-
         .sidebar-open .sidebar {
             transform: translateX(0);
         }
 
-        .confirmation-modal {
-            background-color: rgba(0, 0, 0, 0.4);
-            transition: opacity 0.3s ease;
+        .menu-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .profile-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sign-out-btn {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .profile-container:hover .sign-out-btn,
+        .profile-container.active .sign-out-btn {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
 
-<body class="min-h-screen">
-    <!-- Background -->
-    <div
-        class="fixed inset-0 bg-[image:var(--background-image)] bg-cover bg-center bg-no-repeat transition-all duration-300">
-    </div>
-    <div class="fixed inset-0 bg-black/30 dark:bg-black/60 transition-all duration-300"></div>
-
-    <!-- Confirmation Modal -->
-    <div id="confirmationModal" class="fixed inset-0 z-[1000] confirmation-modal hidden">
-        <div class="flex items-center justify-center min-h-full p-4">
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl max-w-md w-full shadow-xl transform transition-all">
-                <h3 class="text-xl font-bold mb-4 text-red-500 dark:text-red-400">⚠️ Delete Entry</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-6">This entry will be permanently deleted and cannot be
-                    recovered. Are you sure?</p>
-                <div class="flex justify-end space-x-3">
-                    <button onclick="hideConfirmation()"
-                        class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                        Cancel
-                    </button>
-                    <button onclick="confirmDelete()"
-                        class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>
+<body class="bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 min-h-screen">
+    <!-- Profile Icon -->
+    <div class="profile-container" onclick="toggleSignOut()" onmouseover="showSignOut()" onmouseout="hideSignOut()">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" class="profile-image">
+        <button id="signOutBtn" class="sign-out-btn" onclick="signOut()">Sign Out</button>
     </div>
 
-    <!-- Header Section -->
-    <div
-        class="fixed w-full top-0 z-50 flex justify-between items-center p-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
-        <button class="p-2 bg-purple-600 hover:bg-purple-700 rounded-lg shadow text-white"
-            onclick="toggleSidebar()">☰</button>
-        <div class="flex items-center gap-4">
-            <button id="themeToggle" onclick="toggleTheme()"
-                class="p-2 rounded-lg bg-white/90 dark:bg-gray-700 shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-600">
-                <svg id="sunIcon" class="w-6 h-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
-                </svg>
-                <svg id="moonIcon" class="w-6 h-6 text-gray-200 hidden" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-            </button>
-            <div class="relative group">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile"
-                    class="w-10 h-10 rounded-full border-2 border-purple-500 dark:border-purple-400 cursor-pointer shadow-sm">
-                <button onclick="signOut()"
-                    class="absolute top-12 right-0 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow">
-                    Sign Out
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Hamburger Menu -->
+    <button class="menu-btn p-3 bg-purple-600 rounded-full shadow-lg text-white" onclick="toggleSidebar()">☰</button>
 
     <!-- Sidebar -->
     <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white">
         <h2 class="text-2xl font-bold mb-8 mt-4 text-center">Journal Menu</h2>
         <button onclick="window.location.href='new-entry.html'"
-            class="w-full p-4 bg-purple-400 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-700 text-white rounded-xl transition-all flex items-center justify-center space-x-3 shadow-md">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <span class="font-medium">New Entry</span>
+            class="w-full p-4 bg-purple-400 hover:bg-purple-500 text-white rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md">
+            <span class="text-2xl">➕</span>
+            <span>Add New Journal</span>
         </button>
         <button onclick="window.location.href='journal.html'"
-            class="w-full p-4 bg-indigo-400 hover:bg-indigo-500 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white rounded-xl transition-all flex items-center justify-center space-x-3 shadow-md">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-            <span class="font-medium">View Entries</span>
+            class="w-full p-4 bg-indigo-400 hover:bg-indigo-500 text-white rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md">
+            <span class="text-2xl">📖</span>
+            <span>View Journals</span>
+        </button>
+        <button onclick="logout()"
+            class="w-full p-4 bg-red-300 hover:bg-red-400 text-white rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md mt-auto">
+            <span class="text-2xl">⭕</span>
+            <span>Logout</span>
         </button>
     </div>
 
     <!-- Main Content -->
-    <div class="pt-24 px-4 md:px-8 transition-all duration-300 max-w-7xl mx-auto">
-        <h1 class="text-4xl font-extrabold text-purple-800 dark:text-purple-200 mb-8 text-center">Your Journal Entries
-        </h1>
+    <div class="max-w-4xl mx-auto mb-6 text-center">
+        <h2 id="welcomeMessage" class="text-2xl font-semibold text-purple-700"></h2>
+    </div>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col md:flex-row justify-center gap-4 mb-8">
+    <div class="pt-20 px-8 transition-all duration-300">
+        <h1 class="text-4xl font-extrabold text-purple-800 mb-8 text-center">Your Journal Entries</h1>
+
+        <!-- Buttons -->
+        <div class="flex justify-center gap-4 mb-6">
             <button onclick="window.location.href='new-entry.html'"
-                class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 text-white px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add New Entry
+                class="bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-xl shadow">
+                + Add New Entry
             </button>
-            <button onclick="exportToPDF()"
-                class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Export to PDF
+            <button onclick="exportToPDF()" class="bg-green-600 hover:bg-green-700 text-white p-3 rounded-xl shadow">
+                📄 Download PDF of my Journal Entries
             </button>
         </div>
 
         <!-- Search and Sort -->
-        <div
-            class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 p-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-sm">
+        <div class="flex justify-between items-center mb-6 max-w-4xl mx-auto">
             <input type="text" id="searchInput" placeholder="Search entries..."
-                class="w-full md:w-64 p-3 bg-white dark:bg-gray-700 border-2 border-purple-200 dark:border-purple-800 rounded-lg focus:outline-none focus:border-purple-500 dark:focus:border-purple-400 transition-colors">
+                class="p-2 border-2 border-purple-300 rounded-lg w-64 focus:outline-none focus:border-purple-500">
             <select id="sortSelect"
-                class="w-full md:w-48 p-3 bg-white dark:bg-gray-700 border-2 border-purple-200 dark:border-purple-800 rounded-lg focus:outline-none focus:border-purple-500 dark:focus:border-purple-400 transition-colors">
+                class="p-2 border-2 border-purple-300 rounded-lg focus:outline-none focus:border-purple-500">
                 <option value="desc">Newest First</option>
                 <option value="asc">Oldest First</option>
             </select>
         </div>
 
         <!-- Journal Entries -->
-        <div id="entries" class="grid gap-4"></div>
+        <div id="entries" class="space-y-4 max-w-4xl mx-auto"></div>
     </div>
+
+    <!-- Hidden PDF Container -->
+    <div id="pdfContent" class="hidden"></div>
 
     <script>
         const API = "https://server-dsgo.onrender.com/api";
@@ -182,114 +145,6 @@
         if (!userId) window.location.href = "index.html";
 
         let allEntries = [];
-        function updateBackground() {
-            const isDark = document.documentElement.classList.contains('dark');
-            document.documentElement.style.setProperty(
-                '--background-image',
-                isDark ? "url('background.png')" : "url('background1.png')"
-            );
-        }
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.className = savedTheme;
-            
-            const sunIcon = document.getElementById('sunIcon');
-            const moonIcon = document.getElementById('moonIcon');
-            if (savedTheme === 'dark') {
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            } else {
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            }
-            updateBackground();
-        }
-
-        function toggleTheme() {
-            const htmlEl = document.documentElement;
-            const isDark = htmlEl.classList.contains('dark');
-            const sunIcon = document.getElementById('sunIcon');
-            const moonIcon = document.getElementById('moonIcon');
-
-            if (isDark) {
-                htmlEl.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            } else {
-                htmlEl.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            }
-            updateBackground();
-        }
-
-        initTheme();
-
-        let currentDeleteId = null;
-
-        if (!userId) window.location.href = "index.html";
-
-        async function fetchEntries() {
-            const res = await fetch(`${API}/journals/${userId}`);
-            const data = await res.json();
-            allEntries = data.reverse();
-            renderEntries();
-        }
-
-        function renderEntries() {
-            const entriesContainer = document.getElementById('entries');
-            entriesContainer.innerHTML = allEntries.length ? '' : '<p class="text-center text-gray-600 dark:text-gray-400">No entries found</p>';
-            
-            allEntries.forEach(entry => {
-                const entryEl = document.createElement('div');
-                entryEl.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-all hover:shadow-md';
-                entryEl.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <div class="text-sm text-purple-600 dark:text-purple-400 mb-2">
-                                ${new Date(entry.createdAt).toLocaleDateString('en-US', { 
-                                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-                                })}
-                            </div>
-                            <div class="text-gray-800 dark:text-gray-200 leading-relaxed">
-                                ${entry.content.split('\n').join('<br>')}
-                            </div>
-                        </div>
-                        <div class="flex gap-2 ml-4">
-                            <button onclick="editEntry('${entry._id}', this)" 
-                                    class="p-2 bg-purple-100 dark:bg-gray-700 hover:bg-purple-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
-                                ✏️
-                            </button>
-                            <button onclick="showConfirmation('${entry._id}')" 
-                                    class="p-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 rounded-lg transition-colors">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                `;
-                entriesContainer.appendChild(entryEl);
-            });
-        }
-
-        function showConfirmation(entryId) {
-            currentDeleteId = entryId;
-            document.getElementById('confirmationModal').style.display = 'flex';
-        }
-
-        function hideConfirmation() {
-            document.getElementById('confirmationModal').style.display = 'none';
-            currentDeleteId = null;
-        }
-
-        async function confirmDelete() {
-            if (!currentDeleteId) return;
-            await fetch(`${API}/journals/${currentDeleteId}`, { method: "DELETE" });
-            hideConfirmation();
-            fetchEntries();
-        }
 
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -423,4 +278,5 @@
         fetchEntries();
     </script>
 </body>
+
 </html>
