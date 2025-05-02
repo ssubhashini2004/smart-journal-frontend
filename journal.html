@@ -315,6 +315,23 @@
             console.error('Error fetching entries:', error);
         }
     }
+    function exportToPDF() {
+        const pdfContainer = document.getElementById("pdfContent");
+
+        // Clone the node so it's independent of visibility settings
+        const clone = pdfContainer.cloneNode(true);
+        clone.style.display = 'block'; // Ensure it's visible for rendering
+
+        const opt = {
+            margin: 0.5,
+            filename: 'journal_entries.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(clone).save();
+    }
 
     function renderEntries() {
         const searchTerm = searchInput.value.toLowerCase();
