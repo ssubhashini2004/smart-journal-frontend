@@ -29,6 +29,12 @@
             transform: translateX(0);
         }
 
+        .menu-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
         .entry-card {
             transition: all 0.2s ease;
         }
@@ -40,35 +46,7 @@
         .confirmation-dialog {
             backdrop-filter: blur(2px);
         }
-        .sidebar {
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: transform;
-        }
-    
-        #sidebarOverlay {
-            pointer-events: none;
-        }
         
-        #sidebarOverlay.visible {
-            pointer-events: auto;
-        }
-        @keyframes slideIn {
-        from { transform: translateX(-100%); }
-        to { transform: translateX(0); }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); }
-            to { transform: translateX(-100%); }
-        }
-
-        .sidebar {
-            animation: slideOut 0.3s ease forwards;
-        }
-
-        .sidebar-open .sidebar {
-            animation: slideIn 0.3s ease forwards;
-        }
     </style>
 </head>
 
@@ -112,32 +90,24 @@
     </button>
 
     <!-- Sidebar -->
-    <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white dark:bg-gray-800 z-50">
-        <h2 class="text-2xl font-bold mb-8 mt-4 text-center border-b pb-4 border-white/20">Journal Menu</h2>
-        <button onclick="window.location.href='new-entry.html'" class="w-full p-4 bg-white/10 hover:bg-white/20 rounded-xl transition-all flex items-center 
-                   justify-start space-x-3 shadow-md hover:shadow-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <span class="font-medium">New Entry</span>
+    <!-- Sidebar -->
+    <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white">
+        <h2 class="text-2xl font-bold mb-8 mt-4 text-center">Journal Menu</h2>
+        <button onclick="window.location.href='new-entry.html'" class="w-full p-4 bg-purple-400 hover:bg-purple-500 text-white rounded-xl transition-all 
+                           flex items-center justify-center space-x-2 shadow-md">
+            <span class="text-2xl">➕</span>
+            <span>Add New Journal</span>
         </button>
-        <button onclick="window.location.href='journal.html'" class="w-full p-4 bg-white/10 hover:bg-white/20 rounded-xl transition-all flex items-center 
-                   justify-start space-x-3 shadow-md hover:shadow-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-            <span class="font-medium">View Journals</span>
+        <button onclick="window.location.href='journal.html'" class="w-full p-4 bg-indigo-400 hover:bg-indigo-500 text-white rounded-xl transition-all 
+                           flex items-center justify-center space-x-2 shadow-md">
+            <span class="text-2xl">📖</span>
+            <span>View Journals</span>
         </button>
-        <div class="mt-auto pt-8 border-t border-white/20">
-            <button onclick="signOut()" class="w-full p-4 bg-red-400/90 hover:bg-red-500/90 text-white rounded-xl transition-all 
-                       flex items-center justify-start space-x-3 shadow-md hover:shadow-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <span class="font-medium">Logout</span>
-            </button>
-        </div>
+        <button onclick="logout()" class="w-full p-4 bg-red-300 hover:bg-red-400 text-white rounded-xl transition-all 
+                           flex items-center justify-center space-x-2 shadow-md mt-auto">
+            <span class="text-2xl">⭕</span>
+            <span>Logout</span>
+        </button>
     </div>
 
     <!-- Main Content -->
@@ -244,34 +214,14 @@
 
     // Sidebar Toggle
     function toggleSidebar() {
-        const sidebarOpen = document.body.classList.toggle('sidebar-open');
-        const overlay = document.getElementById('sidebarOverlay');
-        
-        if (sidebarOpen) {
-            overlay.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
-            overlay.classList.add('opacity-100', 'visible', 'pointer-events-auto');
-        } else {
-            overlay.classList.remove('opacity-100', 'visible', 'pointer-events-auto');
-            overlay.classList.add('opacity-0', 'invisible', 'pointer-events-none');
+            document.body.classList.toggle('sidebar-open');
         }
-    }
 
-    // Close sidebar when pressing ESC key
     document.addEventListener('click', (event) => {
         const sidebar = document.querySelector('.sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const menuBtn = document.querySelector('[onclick="toggleSidebar()"]');
-        
-        if (document.body.classList.contains('sidebar-open') &&
-            !sidebar.contains(event.target) &&
-            !menuBtn.contains(event.target)) {
-            toggleSidebar();
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
-            toggleSidebar();
+        const menuBtn = document.querySelector('.menu-btn');
+        if (!sidebar.contains(event.target) && event.target !== menuBtn) {
+            document.body.classList.remove('sidebar-open');
         }
     });
 
