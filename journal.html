@@ -16,25 +16,6 @@
             --background-image: url('background.png');
         }
 
-        .sidebar {
-            background: linear-gradient(180deg, #4f46e5 0%, #6366f1 100%);
-            width: 280px;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-        }
-
-        .sidebar-open .sidebar {
-            transform: translateX(0);
-        }
-
-        .menu-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-        }
         .entry-card {
             transition: all 0.2s ease;
         }
@@ -46,15 +27,25 @@
         .confirmation-dialog {
             backdrop-filter: blur(2px);
         }
-        
+
+        .hamburger-menu {
+            display: none;
+            position: absolute;
+            top: 3.5rem;
+            left: 1rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .hamburger-menu.open {
+            display: block;
+        }
     </style>
 </head>
 
 <body class="min-h-screen bg-cover bg-center" style="background-image: var(--background-image)">
-    <div id="sidebarOverlay"
-        class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 opacity-0 invisible pointer-events-none"
-        onclick="toggleSidebar()">
-    </div>
     <!-- Theme Toggle -->
     <button id="themeToggle" onclick="toggleTheme()"
         class="fixed top-4 right-20 p-2 rounded-full bg-white/90 dark:bg-gray-700 shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-600 z-50">
@@ -82,32 +73,28 @@
         </div>
     </div>
 
-    <!-- Hamburger Menu -->
-    <button class="fixed top-4 left-4 p-3 bg-purple-600 rounded-full shadow-lg text-white z-50
-                   hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 transition-colors"
-        onclick="toggleSidebar()">
+    <!-- Hamburger Button -->
+    <button onclick="toggleMenu()" class="fixed top-4 left-4 p-3 bg-purple-600 rounded-full shadow-lg text-white z-50
+                   hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 transition-colors">
         ☰
     </button>
 
-    <!-- Sidebar -->
-    <!-- Sidebar -->
-    <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white">
-        <h2 class="text-2xl font-bold mb-8 mt-4 text-center">Journal Menu</h2>
-        <button onclick="window.location.href='new-entry.html'" class="w-full p-4 bg-purple-400 hover:bg-purple-500 text-white rounded-xl transition-all 
-                           flex items-center justify-center space-x-2 shadow-md">
-            <span class="text-2xl">➕</span>
-            <span>Add New Journal</span>
-        </button>
-        <button onclick="window.location.href='journal.html'" class="w-full p-4 bg-indigo-400 hover:bg-indigo-500 text-white rounded-xl transition-all 
-                           flex items-center justify-center space-x-2 shadow-md">
-            <span class="text-2xl">📖</span>
-            <span>View Journals</span>
-        </button>
-        <button onclick="logout()" class="w-full p-4 bg-red-300 hover:bg-red-400 text-white rounded-xl transition-all 
-                           flex items-center justify-center space-x-2 shadow-md mt-auto">
-            <span class="text-2xl">⭕</span>
-            <span>Logout</span>
-        </button>
+    <!-- Hamburger Menu -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <div class="flex flex-col p-2 gap-2 min-w-[200px]">
+            <button onclick="window.location.href='journal.html'" class="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors
+                       text-gray-800 dark:text-gray-200">
+                📖 View Journals
+            </button>
+            <button onclick="window.location.href='new-entry.html'" class="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors
+                       text-gray-800 dark:text-gray-200">
+                ✏️ New Entry
+            </button>
+            <button onclick="window.location.href='index.html'" class="px-4 py-2 text-left hover:bg-red-100 dark:hover:bg-red-800 rounded-md transition-colors
+                       text-red-600 dark:text-red-300">
+                🔒 Logout
+            </button>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -153,7 +140,7 @@
 
             <!-- Journal Entries -->
             <div id="pdfContent" class="space-y-4">
-            <div id="entries" class="space-y-4"></div>
+                <div id="entries" class="space-y-4"></div>
             </div>
         </div>
     </div>
@@ -183,119 +170,117 @@
         </div>
     </div>
 
-    <!-- Hidden PDF Container -->
-    
-
     <script>
-    // Theme Management
-    function updateBackground() {
-        const isDark = document.documentElement.classList.contains('dark');
-        document.documentElement.style.setProperty(
-            '--background-image',
-            isDark ? "url('background.png')" : "url('background1.png')"
-        );
-    }
-
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.className = savedTheme;
-        updateBackground();
-        document.getElementById('sunIcon').classList.toggle('hidden', savedTheme === 'dark');
-        document.getElementById('moonIcon').classList.toggle('hidden', savedTheme !== 'dark');
-    }
-
-    function toggleTheme() {
-        document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        updateBackground();
-        document.getElementById('sunIcon').classList.toggle('hidden');
-        document.getElementById('moonIcon').classList.toggle('hidden');
-    }
-
-    // Sidebar Toggle
-    function toggleSidebar() {
-            document.body.classList.toggle('sidebar-open');
-            const overlay = document.getElementById('sidebarOverlay');
-            const isOpen = document.body.classList.contains('sidebar-open');
-            overlay.classList.toggle('opacity-100', isOpen);
-            overlay.classList.toggle('opacity-0', !isOpen);
-            overlay.classList.toggle('visible', isOpen);
-            overlay.classList.toggle('invisible', !isOpen);
-            overlay.classList.toggle('pointer-events-none', !isOpen);
-    }
-
-    
-
-
-    // Confirmation Modal
-    let entryToDelete = null;
-
-    function showConfirmation(id) {
-        entryToDelete = id;
-        document.getElementById('confirmationModal').classList.remove('hidden');
-    }
-
-    function hideConfirmation() {
-        entryToDelete = null;
-        document.getElementById('confirmationModal').classList.add('hidden');
-    }
-
-    async function deleteConfirmed() {
-        if (!entryToDelete) return;
-        await fetch(`${API}/journals/${entryToDelete}`, { method: "DELETE" });
-        hideConfirmation();
-        fetchEntries();
-    }
-
-    // Entry Management
-    const API = "https://server-dsgo.onrender.com/api";
-    const userId = localStorage.getItem("userId");
-    const entries = document.getElementById("entries");
-    const searchInput = document.getElementById("searchInput");
-    const sortSelect = document.getElementById("sortSelect");
-
-    if (!userId) window.location.href = "index.html";
-
-    let allEntries = [];
-    
-    async function fetchEntries() {
-        try {
-            const res = await fetch(`${API}/journals/${userId}`);
-            const data = await res.json();
-            allEntries = data.reverse();
-            renderEntries();
-        } catch (error) {
-            console.error('Error fetching entries:', error);
+        // Theme Management
+        function updateBackground() {
+            const isDark = document.documentElement.classList.contains('dark');
+            document.documentElement.style.setProperty(
+                '--background-image',
+                isDark ? "url('background.png')" : "url('background1.png')"
+            );
         }
-    }
-    function exportToPDF() {
-        const element = document.getElementById('entries');
-        const opt = {
-            margin: 0.5,
-            filename: 'journal_entries.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                ignoreElements: (element) => {
-                    return element.classList && element.classList.contains('no-print');
-                }
-            },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
 
-        html2pdf().set(opt).from(element).save();
-    }
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.className = savedTheme;
+            updateBackground();
+            document.getElementById('sunIcon').classList.toggle('hidden', savedTheme === 'dark');
+            document.getElementById('moonIcon').classList.toggle('hidden', savedTheme !== 'dark');
+        }
 
-    function renderEntries() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const sortOrder = sortSelect.value;
-        const filtered = allEntries
-            .filter(e => e.content.toLowerCase().includes(searchTerm))
-            .sort((a, b) => sortOrder === "desc" ? 
-                new Date(b.createdAt) - new Date(a.createdAt) : 
-                new Date(a.createdAt) - new Date(b.createdAt));
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateBackground();
+            document.getElementById('sunIcon').classList.toggle('hidden');
+            document.getElementById('moonIcon').classList.toggle('hidden');
+        }
 
-        entries.innerHTML = filtered.length ? filtered.map(entry => `
+        // Hamburger Menu Toggle
+        function toggleMenu() {
+            const menu = document.getElementById('hamburgerMenu');
+            menu.classList.toggle('open');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (event) => {
+            const menu = document.getElementById('hamburgerMenu');
+            const menuButton = document.querySelector('[onclick="toggleMenu()"]');
+            if (!menu.contains(event.target) && !menuButton.contains(event.target)) {
+                menu.classList.remove('open');
+            }
+        });
+
+        // Rest of the JavaScript remains the same
+        // Confirmation Modal
+        let entryToDelete = null;
+
+        function showConfirmation(id) {
+            entryToDelete = id;
+            document.getElementById('confirmationModal').classList.remove('hidden');
+        }
+
+        function hideConfirmation() {
+            entryToDelete = null;
+            document.getElementById('confirmationModal').classList.add('hidden');
+        }
+
+        async function deleteConfirmed() {
+            if (!entryToDelete) return;
+            await fetch(`${API}/journals/${entryToDelete}`, { method: "DELETE" });
+            hideConfirmation();
+            fetchEntries();
+        }
+
+        // Entry Management
+        const API = "https://server-dsgo.onrender.com/api";
+        const userId = localStorage.getItem("userId");
+        const entries = document.getElementById("entries");
+        const searchInput = document.getElementById("searchInput");
+        const sortSelect = document.getElementById("sortSelect");
+
+        if (!userId) window.location.href = "index.html";
+
+        let allEntries = [];
+
+        async function fetchEntries() {
+            try {
+                const res = await fetch(`${API}/journals/${userId}`);
+                const data = await res.json();
+                allEntries = data.reverse();
+                renderEntries();
+            } catch (error) {
+                console.error('Error fetching entries:', error);
+            }
+        }
+        function exportToPDF() {
+            const element = document.getElementById('entries');
+            const opt = {
+                margin: 0.5,
+                filename: 'journal_entries.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    ignoreElements: (element) => {
+                        return element.classList && element.classList.contains('no-print');
+                    }
+                },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function renderEntries() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const sortOrder = sortSelect.value;
+            const filtered = allEntries
+                .filter(e => e.content.toLowerCase().includes(searchTerm))
+                .sort((a, b) => sortOrder === "desc" ?
+                    new Date(b.createdAt) - new Date(a.createdAt) :
+                    new Date(a.createdAt) - new Date(b.createdAt));
+
+            entries.innerHTML = filtered.length ? filtered.map(entry => `
             <div class="entry-card p-6 bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg">
                 <div class="flex justify-between items-start gap-4">
                     <div class="flex-1">
@@ -321,13 +306,13 @@
                 </div>
             </div>
         `).join('') : '<p class="text-center text-gray-600 dark:text-gray-400">No entries found</p>';
-    }
+        }
 
-    // Edit Entry Function
-    function editEntry(id, button) {
-        const card = button.closest('.entry-card');
-        const content = card.querySelector('div.text-gray-800').textContent;
-        card.innerHTML = `
+        // Edit Entry Function
+        function editEntry(id, button) {
+            const card = button.closest('.entry-card');
+            const content = card.querySelector('div.text-gray-800').textContent;
+            card.innerHTML = `
             <div class="w-full">
                 <textarea class="w-full p-3 border-2 border-purple-300 rounded-lg mb-3
                                dark:bg-gray-800 dark:text-gray-200">${content}</textarea>
@@ -342,41 +327,41 @@
                     </button>
                 </div>
             </div>`;
-    }
-
-    async function saveEdit(id) {
-        const newContent = document.querySelector('textarea').value.trim();
-        if (!newContent) return;
-        
-        try {
-            await fetch(`${API}/journals/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: newContent })
-            });
-            fetchEntries();
-        } catch (error) {
-            console.error('Error updating entry:', error);
         }
-    }
 
-    function cancelEdit() {
+        async function saveEdit(id) {
+            const newContent = document.querySelector('textarea').value.trim();
+            if (!newContent) return;
+
+            try {
+                await fetch(`${API}/journals/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: newContent })
+                });
+                fetchEntries();
+            } catch (error) {
+                console.error('Error updating entry:', error);
+            }
+        }
+
+        function cancelEdit() {
+            fetchEntries();
+        }
+
+        // Sign Out
+        function signOut() {
+            localStorage.removeItem("userId");
+            window.location.href = "index.html";
+        }
+
+        // Initialize
+        initTheme();
+        document.getElementById('confirmDelete').addEventListener('click', deleteConfirmed);
+        searchInput.addEventListener('input', renderEntries);
+        sortSelect.addEventListener('change', renderEntries);
         fetchEntries();
-    }
-
-    // Sign Out
-    function signOut() {
-        localStorage.removeItem("userId");
-        window.location.href = "index.html";
-    }
-
-    // Initialize
-    initTheme();
-    document.getElementById('confirmDelete').addEventListener('click', deleteConfirmed);
-    searchInput.addEventListener('input', renderEntries);
-    sortSelect.addEventListener('change', renderEntries);
-    fetchEntries();
-</script>
+    </script>
 </body>
 
 </html>
