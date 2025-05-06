@@ -312,7 +312,19 @@
             });
 
             const data = await res.json();
-            message.innerText = data.message || data.error;
+            if (res.ok) {
+                message.innerText = data.message;
+                message.style.color = '#16a34a';  // Tailwind green-600
+                message.style.fontWeight = 'bold';
+                setTimeout(() => {
+                    message.innerText = '';
+                    message.style.color = '';
+                    message.style.fontWeight = '';
+                }, 5000);
+            } else {
+                message.innerText = data.error;
+                message.style.color = '#dc2626';  // Tailwind red-600
+            }
             entry.value = "";
         }
 
