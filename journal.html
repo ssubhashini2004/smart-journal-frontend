@@ -224,13 +224,7 @@
             overlay.classList.toggle('pointer-events-none', !isOpen);
     }
 
-    document.addEventListener('click', (event) => {
-        const sidebar = document.querySelector('.sidebar');
-        const menuBtn = document.querySelector('.menu-btn');
-        if (!sidebar.contains(event.target) && event.target !== menuBtn) {
-            document.body.classList.remove('sidebar-open');
-        }
-    });
+    
 
 
     // Confirmation Modal
