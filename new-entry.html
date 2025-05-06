@@ -1,19 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Journal Entry</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        :root {
+            --background-image: url('background1.png');
+        }
+
+        .dark {
+            --background-image: url('background.png');
+        }
+
         .sidebar {
-            background: linear-gradient(180deg, #4f46e5 0%, #6366f1 100%);
+            background: linear-gradient(160deg, #6366f1 0%, #4f46e5 100%);
             width: 280px;
             transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 999;
+            z-index: 1000;
+        }
+
+        .dark .sidebar {
+            background: linear-gradient(160deg, #1e1b4b 0%, #312e81 100%);
         }
 
         .sidebar-open .sidebar {
@@ -24,7 +36,21 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            z-index: 1000;
+            z-index: 1100;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .sidebar-button {
+            transition: all 0.2s ease;
+            transform-origin: left center;
+        }
+
+        .sidebar-button:hover {
+            transform: translateX(8px);
         }
 
         .profile-container {
@@ -44,6 +70,10 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .dark .profile-image {
+            border-color: #e5e7eb;
+        }
+
         .sign-out-btn {
             position: absolute;
             top: 50px;
@@ -59,6 +89,10 @@
             white-space: nowrap;
         }
 
+        .dark .sign-out-btn {
+            background: #dc2626;
+        }
+
         .profile-container:hover .sign-out-btn,
         .profile-container.active .sign-out-btn {
             opacity: 1;
@@ -67,7 +101,21 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 min-h-screen">
+<body class="min-h-screen bg-cover bg-center" style="background-image: var(--background-image)">
+    <!-- Theme Toggle -->
+    <button id="themeToggle" onclick="toggleTheme()"
+        class="fixed top-4 right-20 p-2 rounded-full bg-white/90 dark:bg-gray-700 shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-600 z-50">
+        <svg id="sunIcon" class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+        </svg>
+        <svg id="moonIcon" class="w-6 h-6 text-gray-200 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    </button>
+
     <!-- Profile Icon -->
     <div class="profile-container" onclick="toggleSignOut()" onmouseover="showSignOut()" onmouseout="hideSignOut()">
         <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" class="profile-image">
@@ -75,69 +123,118 @@
     </div>
 
     <!-- Hamburger Menu -->
-    <button class="menu-btn p-3 bg-purple-600 rounded-full shadow-lg text-white" onclick="toggleSidebar()">
+    <button
+        class="menu-btn p-3 bg-purple-600 rounded-full shadow-lg text-white dark:bg-purple-700 dark:hover:bg-purple-800 hover:bg-purple-700"
+        onclick="toggleSidebar()">
         ☰
     </button>
 
-    <!-- Sidebar -->
+    <!-- Enhanced Sidebar -->
     <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white">
-        <h2 class="text-2xl font-bold mb-8 mt-4 text-center">Journal Menu</h2>
-        <button onclick="window.location.href='new-entry.html'" class="w-full p-4 bg-purple-400 hover:bg-purple-500 text-white rounded-xl transition-all 
-                       flex items-center justify-center space-x-2 shadow-md">
-            <span class="text-2xl">➕</span>
-            <span>Add New Journal</span>
+        <h2 class="text-2xl font-bold mb-8 mt-4 text-center dark:text-purple-100">Journal Menu</h2>
+
+        <button onclick="window.location.href='new-entry.html'" class="sidebar-button w-full p-4 bg-purple-400/90 hover:bg-purple-500 dark:bg-purple-600/80 dark:hover:bg-purple-700 text-white rounded-xl 
+                       flex items-center justify-start gap-4 shadow-md transition-all pl-6">
+            <span class="text-2xl">📝</span>
+            <span class="font-semibold">New Entry</span>
         </button>
-        <button onclick="window.location.href='journal.html'" class="w-full p-4 bg-indigo-400 hover:bg-indigo-500 text-white rounded-xl transition-all 
-                       flex items-center justify-center space-x-2 shadow-md">
-            <span class="text-2xl">📖</span>
-            <span>View Journals</span>
+
+        <button onclick="window.location.href='journal.html'" class="sidebar-button w-full p-4 bg-indigo-400/90 hover:bg-indigo-500 dark:bg-indigo-600/80 dark:hover:bg-indigo-700 text-white rounded-xl 
+                       flex items-center justify-start gap-4 shadow-md transition-all pl-6">
+            <span class="text-2xl">📚</span>
+            <span class="font-semibold">View Entries</span>
         </button>
-        <button onclick="logout()" class="w-full p-4 bg-red-300 hover:bg-red-400 text-white rounded-xl transition-all 
-                       flex items-center justify-center space-x-2 shadow-md mt-auto">
-            <span class="text-2xl">⭕</span>
-            <span>Logout</span>
-        </button>
+
+        <div class="mt-auto space-y-4">
+            <button onclick="logout()" class="sidebar-button w-full p-4 bg-red-300/90 hover:bg-red-400 dark:bg-red-500/80 dark:hover:bg-red-600 text-white rounded-xl 
+                           flex items-center justify-start gap-4 shadow-md transition-all pl-6">
+                <span class="text-2xl">🚪</span>
+                <span class="font-semibold">Logout</span>
+            </button>
+        </div>
     </div>
 
     <!-- Main Content -->
-    <div class="pt-20 px-8 max-w-3xl mx-auto transition-all duration-300">
-        <h1 class="text-4xl font-extrabold text-purple-800 mb-8 text-center">New Journal Entry</h1>
+    <div class="pt-24 px-4 sm:px-8 lg:px-16 transition-all duration-300">
+        <div class="max-w-5xl mx-auto">
+            <h1 class="text-4xl font-extrabold text-purple-800 dark:text-purple-200 mb-8 text-center">
+                New Journal Entry
+            </h1>
 
-        <!-- Journal Entry Area -->
-        <div class="mb-6">
-            <textarea id="entry" rows="8"
-                class="w-full p-4 border-2 border-purple-300 rounded-xl shadow-lg focus:outline-none focus:border-purple-500"
-                placeholder="Start speaking..." disabled></textarea>
-        </div>
+            <!-- Journal Entry Area -->
+            <div class="mb-6">
+                <textarea id="entry" rows="8"
+                    class="w-full p-4 border-2 border-purple-300 rounded-xl shadow-lg focus:outline-none focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    placeholder="Start speaking..." disabled></textarea>
+            </div>
 
-        <div class="flex justify-between gap-4 mb-6">
-            <button id="recordBtn" class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-xl shadow-lg 
+            <div class="flex flex-col sm:flex-row justify-between gap-4 mb-6">
+                <button id="recordBtn" class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 text-white p-4 rounded-xl shadow-lg 
                            flex-1 transition-colors text-lg">
-                🎤 Start Recording
-            </button>
-            <button onclick="saveJournal()" class="bg-green-500 hover:bg-green-600 text-white p-4 rounded-xl shadow-lg 
+                    🎤 Start Recording
+                </button>
+                <button onclick="saveJournal()" class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white p-4 rounded-xl shadow-lg 
                            flex-1 transition-colors text-lg">
-                💾 Save Entry
-            </button>
-            <button onclick="discardJournal()" class="bg-red-300 hover:bg-red-600 text-white p-4 rounded-xl shadow-lg 
+                    💾 Save Entry
+                </button>
+                <button onclick="discardJournal()" class="bg-red-300 hover:bg-red-400 dark:bg-red-500/80 dark:hover:bg-red-600 text-white p-4 rounded-xl shadow-lg 
                            flex-1 transition-colors text-lg">
-                ❌ Discard
-            </button>
-        </div>
+                    ❌ Discard
+                </button>
+            </div>
 
-        <!-- View All Entries Button -->
-        <div class="w-full mb-6">
-            <button onclick="window.location.href='journal.html'"
-                class="w-full bg-indigo-500 hover:bg-indigo-600 text-white p-4 rounded-xl shadow-lg transition-colors text-lg">
-                📚 View All Entries
-            </button>
-        </div>
+            <!-- View All Entries Button -->
+            <div class="w-full mb-6">
+                <button onclick="window.location.href='journal.html'"
+                    class="w-full bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white p-4 rounded-xl shadow-lg transition-colors text-lg">
+                    📚 View All Entries
+                </button>
+            </div>
 
-        <p id="message" class="text-center text-lg font-semibold text-gray-700 mt-4"></p>
+            <p id="message" class="text-center text-lg font-semibold text-gray-700 dark:text-gray-300 mt-4"></p>
+        </div>
     </div>
 
     <script>
-        // Profile and Sign Out Functions
+        // Theme Management
+        function updateBackground() {
+            const isDark = document.documentElement.classList.contains('dark');
+            document.documentElement.style.setProperty(
+                '--background-image',
+                isDark ? "url('background.png')" : "url('background1.png')"
+            );
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.className = savedTheme;
+            updateBackground();
+            document.getElementById('sunIcon').classList.toggle('hidden', savedTheme === 'dark');
+            document.getElementById('moonIcon').classList.toggle('hidden', savedTheme !== 'dark');
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateBackground();
+            document.getElementById('sunIcon').classList.toggle('hidden');
+            document.getElementById('moonIcon').classList.toggle('hidden');
+        }
+
+        // Sidebar Functions
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-open');
+        }
+
+        document.addEventListener('click', (event) => {
+            const sidebar = document.querySelector('.sidebar');
+            const menuBtn = document.querySelector('.menu-btn');
+            if (!sidebar.contains(event.target) && event.target !== menuBtn) {
+                document.body.classList.remove('sidebar-open');
+            }
+        });
+
+        // Profile Functions
         function toggleSignOut() {
             document.querySelector('.profile-container').classList.toggle('active');
         }
@@ -152,24 +249,7 @@
             }
         }
 
-        function signOut() {
-            localStorage.removeItem("userId");
-            window.location.replace("index.html");
-        }
-
         // Existing Functions
-        function toggleSidebar() {
-            document.body.classList.toggle('sidebar-open');
-        }
-
-        document.addEventListener('click', (event) => {
-            const sidebar = document.querySelector('.sidebar');
-            const menuBtn = document.querySelector('.menu-btn');
-            if (!sidebar.contains(event.target) && event.target !== menuBtn) {
-                document.body.classList.remove('sidebar-open');
-            }
-        });
-
         const API = "https://server-dsgo.onrender.com/api";
         const userId = localStorage.getItem("userId");
 
@@ -240,6 +320,14 @@
             entry.value = "";
             entry.disabled = false;
         }
+
+        function signOut() {
+            localStorage.removeItem("userId");
+            window.location.replace("index.html");
+        }
+
+        // Initialize
+        initTheme();
     </script>
 </body>
 
