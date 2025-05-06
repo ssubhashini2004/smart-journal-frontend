@@ -28,96 +28,107 @@
             backdrop-filter: blur(2px);
         }
 
-        .sidebar {
-            background: linear-gradient(180deg, #4f46e5 0%, #6366f1 100%);
-            width: 280px;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-        }
-
-        .sidebar-open .sidebar {
-            transform: translateX(0);
-        }
-
-        .menu-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-        }
-
-        .profile-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .profile-image {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .sign-out-btn {
-            position: absolute;
-            top: 50px;
-            right: 0;
+        .hamburger-menu {
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
-            background: #ef4444;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            white-space: nowrap;
+            position: fixed;
+            top: 5rem;
+            left: 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transform: translateY(-10px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .profile-container:hover .sign-out-btn,
-        .profile-container.active .sign-out-btn {
+        .hamburger-menu.open {
             opacity: 1;
             visibility: visible;
+            transform: translateY(0);
+        }
+
+        .menu-item {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .menu-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 1rem;
+            right: 1rem;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .menu-item:not(:last-child)::after {
+            background: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
 
 <body class="min-h-screen bg-cover bg-center" style="background-image: var(--background-image)">
+    <!-- Theme Toggle -->
+    <button id="themeToggle" onclick="toggleTheme()"
+        class="fixed top-4 right-20 p-2 rounded-full bg-white/90 dark:bg-gray-700 shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-600 z-50">
+        <svg id="sunIcon" class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+        </svg>
+        <svg id="moonIcon" class="w-6 h-6 text-gray-200 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    </button>
+
     <!-- Profile Icon -->
-    <div class="profile-container" onclick="toggleSignOut()" onmouseover="showSignOut()" onmouseout="hideSignOut()">
-        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" class="profile-image">
-        <button id="signOutBtn" class="sign-out-btn" onclick="signOut()">Sign Out</button>
+    <div class="fixed top-4 right-4 z-50 group">
+        <div class="relative">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile"
+                class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-700 shadow-lg cursor-pointer">
+            <button onclick="signOut()" class="absolute -right-2 -bottom-2 bg-red-500 text-white px-3 py-1 rounded-lg shadow-md
+                       opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-sm
+                       hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700">
+                Sign Out
+            </button>
+        </div>
     </div>
 
-    <!-- Hamburger Menu -->
-    <button class="menu-btn p-3 bg-purple-600 rounded-full shadow-lg text-white" onclick="toggleSidebar()">
+    <!-- Hamburger Button -->
+    <button onclick="toggleMenu()" class="fixed top-4 left-4 p-3 bg-purple-600 rounded-full shadow-lg text-white z-50
+                   hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 transition-colors">
         ☰
     </button>
 
-    <!-- Sidebar -->
-    <div class="sidebar fixed h-screen p-6 flex flex-col space-y-4 text-white">
-        <h2 class="text-2xl font-bold mb-8 mt-4 text-center">Journal Menu</h2>
-        <button onclick="window.location.href='new-entry.html'" class="w-full p-4 bg-purple-400 hover:bg-purple-500 text-white rounded-xl transition-all 
-                       flex items-center justify-center space-x-2 shadow-md">
-            <span class="text-2xl">➕</span>
-            <span>New Entry</span>
-        </button>
-        <button onclick="window.location.href='journal.html'" class="w-full p-4 bg-indigo-400 hover:bg-indigo-500 text-white rounded-xl transition-all 
-                       flex items-center justify-center space-x-2 shadow-md">
-            <span class="text-2xl">📖</span>
-            <span>View Journals</span>
-        </button>
-        <button onclick="logout()" class="w-full p-4 bg-red-300 hover:bg-red-400 text-white rounded-xl transition-all 
-                       flex items-center justify-center space-x-2 shadow-md mt-auto">
-            <span class="text-2xl">⭕</span>
-            <span>Logout</span>
-        </button>
+    <!-- Hamburger Menu -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <div class="flex flex-col p-2 w-56">
+            <button onclick="window.location.href='journal.html'" class="menu-item px-4 py-3 text-left hover:bg-purple-50 dark:hover:bg-purple-900/50 rounded-md
+                       text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                View Journals
+            </button>
+            <button onclick="window.location.href='new-entry.html'" class="menu-item px-4 py-3 text-left hover:bg-purple-50 dark:hover:bg-purple-900/50 rounded-md
+                       text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                New Entry
+            </button>
+            <button onclick="window.location.href='index.html'" class="menu-item px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/50 rounded-md
+                       text-red-600 dark:text-red-300 flex items-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+            </button>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -207,41 +218,32 @@
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.className = savedTheme;
             updateBackground();
+            document.getElementById('sunIcon').classList.toggle('hidden', savedTheme === 'dark');
+            document.getElementById('moonIcon').classList.toggle('hidden', savedTheme !== 'dark');
         }
 
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
             updateBackground();
+            document.getElementById('sunIcon').classList.toggle('hidden');
+            document.getElementById('moonIcon').classList.toggle('hidden');
         }
 
-        // Sidebar Toggle
-        function toggleSidebar() {
-            document.body.classList.toggle('sidebar-open');
+        // Hamburger Menu Toggle
+        function toggleMenu() {
+            const menu = document.getElementById('hamburgerMenu');
+            menu.classList.toggle('open');
         }
 
+        // Close menu when clicking outside
         document.addEventListener('click', (event) => {
-            const sidebar = document.querySelector('.sidebar');
-            const menuBtn = document.querySelector('.menu-btn');
-            if (!sidebar.contains(event.target) && event.target !== menuBtn) {
-                document.body.classList.remove('sidebar-open');
+            const menu = document.getElementById('hamburgerMenu');
+            const menuButton = document.querySelector('[onclick="toggleMenu()"]');
+            if (!menu.contains(event.target) && !menuButton.contains(event.target)) {
+                menu.classList.remove('open');
             }
         });
-
-        // Profile Functions
-        function toggleSignOut() {
-            document.querySelector('.profile-container').classList.toggle('active');
-        }
-
-        function showSignOut() {
-            document.querySelector('.profile-container').classList.add('active');
-        }
-
-        function hideSignOut() {
-            if (!document.querySelector('.profile-container').classList.contains('active')) {
-                document.querySelector('.profile-container').classList.remove('active');
-            }
-        }
 
         // Confirmation Modal
         let entryToDelete = null;
@@ -385,10 +387,6 @@
         function signOut() {
             localStorage.removeItem("userId");
             window.location.href = "index.html";
-        }
-
-        function logout() {
-            signOut();
         }
 
         // Initialize
