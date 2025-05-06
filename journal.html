@@ -215,7 +215,14 @@
     // Sidebar Toggle
     function toggleSidebar() {
             document.body.classList.toggle('sidebar-open');
-        }
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = document.body.classList.contains('sidebar-open');
+            overlay.classList.toggle('opacity-100', isOpen);
+            overlay.classList.toggle('opacity-0', !isOpen);
+            overlay.classList.toggle('visible', isOpen);
+            overlay.classList.toggle('invisible', !isOpen);
+            overlay.classList.toggle('pointer-events-none', !isOpen);
+    }
 
     document.addEventListener('click', (event) => {
         const sidebar = document.querySelector('.sidebar');
