@@ -5,19 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Journal Entry</title>
-    <script>
-        tailwind.config = {
-            darkMode: 'class'
-        }
-    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --background-image: url('background1.png');
+            --title-color: #4c1d95;
+            --text-color: #000000;
+            --message-color: #374151;
         }
 
         .dark {
             --background-image: url('background.png');
+            --title-color: #ffffff;
+            --text-color: #ffffff;
+            --message-color: #ffffff;
         }
 
         .sidebar {
@@ -162,15 +163,15 @@
     <!-- Main Content -->
     <div class="pt-24 px-4 sm:px-8 lg:px-16 transition-all duration-300">
         <div class="max-w-5xl mx-auto">
-            <h1 class="text-4xl font-extrabold text-purple-800 dark:text-white mb-8 text-center">
+            <h1 id="mainTitle" class="text-4xl font-extrabold mb-8 text-center" style="color: var(--title-color)">
                 New Journal Entry
             </h1>
 
             <!-- Journal Entry Area -->
             <div class="mb-6">
                 <textarea id="entry" rows="8"
-                    class="w-full p-4 border-2 border-purple-300 rounded-xl shadow-lg focus:outline-none focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    placeholder="Start speaking..." disabled></textarea>
+                    class="w-full p-4 border-2 border-purple-300 rounded-xl shadow-lg focus:outline-none focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600"
+                    style="color: var(--text-color)" placeholder="Start speaking..." disabled></textarea>
             </div>
 
             <div class="flex flex-col sm:flex-row justify-between gap-4 mb-6">
@@ -196,24 +197,36 @@
                 </button>
             </div>
 
-            <p id="message" class="text-center text-lg font-semibold text-gray-700 dark:text-white mt-4"></p>
+            <p id="message" class="text-center text-lg font-semibold mt-4" style="color: var(--message-color)"></p>
         </div>
     </div>
 
     <script>
         // Theme Management
-        function updateBackground() {
+        function updateThemeColors() {
             const isDark = document.documentElement.classList.contains('dark');
             document.documentElement.style.setProperty(
                 '--background-image',
                 isDark ? "url('background.png')" : "url('background1.png')"
+            );
+            document.documentElement.style.setProperty(
+                '--title-color',
+                isDark ? '#ffffff' : '#4c1d95'
+            );
+            document.documentElement.style.setProperty(
+                '--text-color',
+                isDark ? '#ffffff' : '#000000'
+            );
+            document.documentElement.style.setProperty(
+                '--message-color',
+                isDark ? '#ffffff' : '#374151'
             );
         }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.className = savedTheme;
-            updateBackground();
+            updateThemeColors();
             document.getElementById('sunIcon').classList.toggle('hidden', savedTheme === 'dark');
             document.getElementById('moonIcon').classList.toggle('hidden', savedTheme !== 'dark');
         }
@@ -221,7 +234,7 @@
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-            updateBackground();
+            updateThemeColors();
             document.getElementById('sunIcon').classList.toggle('hidden');
             document.getElementById('moonIcon').classList.toggle('hidden');
         }
@@ -311,7 +324,6 @@
                         entry.disabled = true;
                         isRecording = true;
                         message.textContent = "Recording...";
-                        message.style.color = '';
 
                         // Set initial voice detection timeout
                         noVoiceTimeout = setTimeout(() => {
@@ -327,7 +339,6 @@
                         if (transcript && received.is_final) {
                             entry.value += transcript + ' ';
                             message.textContent = "Transcribing...";
-                            message.style.color = '';
 
                             // Reset voice detection timeouts
                             clearTimeout(noVoiceTimeout);
