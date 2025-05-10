@@ -249,57 +249,90 @@
             }
         }
 
-        // Existing Functions
+        // Journal Entry Functionality
         const API = "https://server-dsgo.onrender.com/api";
         const userId = localStorage.getItem("userId");
-
         if (!userId) window.location.href = "index.html";
 
         const entry = document.getElementById("entry");
         const message = document.getElementById("message");
         const recordBtn = document.getElementById("recordBtn");
 
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = "en-US";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-        recognition.continuous = true;
-
         let isRecording = false;
+        let mediaRecorder;
+        let socket;
+        let mediaStream;
+
+        async function toggleRecording() {
+            if (isRecording) {
+                // Stop recording
+                mediaRecorder.stop();
+                mediaStream.getTracks().forEach(track => track.stop());
+                socket.close();
+                recordBtn.textContent = "🎤 Start Recording";
+                entry.disabled = false;
+                isRecording = false;
+            } else {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                    if (!MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                        alert('Your browser does not support required audio format.');
+                        return;
+                    }
+
+                    mediaRecorder = new MediaRecorder(mediaStream, {
+                        mimeType: 'audio/webm;codecs=opus'
+                    });
+
+                    socket = new WebSocket(
+                        'wss://api.deepgram.com/v1/listen?punctuate=true&language=en-US&interim_results=false&model=nova',
+                        ['token', 'eadc22ae5830742f249706d4a6e615f88ae9b18f']
+                    );
+
+                    socket.onopen = () => {
+                        mediaRecorder.ondataavailable = (event) => {
+                            if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
+                                socket.send(event.data);
+                            }
+                        };
+                        mediaRecorder.start(500);
+                        recordBtn.textContent = "🛑 Stop Recording";
+                        entry.disabled = true;
+                        isRecording = true;
+                        message.textContent = "Recording...";
+                    };
+
+                    socket.onmessage = (message) => {
+                        const received = JSON.parse(message.data);
+                        const transcript = received.channel?.alternatives[0]?.transcript;
+                        if (transcript && received.is_final) {
+                            entry.value += transcript + ' ';
+                            message.textContent = "Transcribing...";
+                        }
+                    };
+
+                    socket.onclose = () => {
+                        if (isRecording) {
+                            message.textContent = "Connection closed unexpectedly";
+                        }
+                    };
+
+                    socket.onerror = (error) => {
+                        message.textContent = "Error: " + error.message;
+                    };
+
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    message.textContent = "Error accessing microphone";
+                }
+            }
+        }
 
         function logout() {
             localStorage.removeItem("userId");
             window.location.replace("index.html");
         }
-
-        function toggleRecording() {
-            if (isRecording) {
-                recognition.stop();
-                recordBtn.textContent = "🎤 Start Recording";
-                entry.disabled = false;
-            } else {
-                recognition.start();
-                recordBtn.textContent = "🛑 Stop Recording";
-                entry.disabled = true;
-            }
-            isRecording = !isRecording;
-        }
-
-        recordBtn.addEventListener("click", toggleRecording);
-
-        recognition.onresult = (event) => {
-            let transcript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                if (event.results[i].isFinal) {
-                    transcript = event.results[i][0].transcript;
-                    entry.value += transcript + " ";
-                }
-            }
-        };
-
-        recognition.onerror = (event) => {
-            message.innerText = "Error: " + event.error;
-        };
 
         async function saveJournal() {
             const content = entry.value.trim();
@@ -314,7 +347,7 @@
             const data = await res.json();
             if (res.ok) {
                 message.innerText = data.message;
-                message.style.color = '#16a34a';  // Tailwind green-600
+                message.style.color = '#16a34a';
                 message.style.fontWeight = 'bold';
                 setTimeout(() => {
                     message.innerText = '';
@@ -323,7 +356,7 @@
                 }, 5000);
             } else {
                 message.innerText = data.error;
-                message.style.color = '#dc2626';  // Tailwind red-600
+                message.style.color = '#dc2626';
             }
             entry.value = "";
         }
@@ -337,6 +370,9 @@
             localStorage.removeItem("userId");
             window.location.replace("index.html");
         }
+
+        // Event Listeners
+        recordBtn.addEventListener("click", toggleRecording);
 
         // Initialize
         initTheme();
