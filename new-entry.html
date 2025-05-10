@@ -262,6 +262,8 @@
         let mediaRecorder;
         let socket;
         let mediaStream;
+        let noVoiceTimeout;
+        let unclearTimeout;
 
         async function toggleRecording() {
             if (isRecording) {
@@ -272,6 +274,9 @@
                 recordBtn.textContent = "🎤 Start Recording";
                 entry.disabled = false;
                 isRecording = false;
+                clearTimeout(noVoiceTimeout);
+                clearTimeout(unclearTimeout);
+                message.textContent = "";
             } else {
                 try {
                     mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -301,30 +306,57 @@
                         entry.disabled = true;
                         isRecording = true;
                         message.textContent = "Recording...";
+                        message.style.color = '';
+
+                        // Set initial voice detection timeout
+                        noVoiceTimeout = setTimeout(() => {
+                            message.textContent = "No voice heard. Are you still here?";
+                            message.style.color = '#dc2626';
+                        }, 5000);
                     };
 
-                    socket.onmessage = (message) => {
-                        const received = JSON.parse(message.data);
-                        const transcript = received.channel?.alternatives[0]?.transcript;
+                    socket.onmessage = (messageEvent) => {
+                        const received = JSON.parse(messageEvent.data);
+                        const transcript = received.channel?.alternatives[0]?.transcript?.trim();
+
                         if (transcript && received.is_final) {
                             entry.value += transcript + ' ';
                             message.textContent = "Transcribing...";
+                            message.style.color = '';
+
+                            // Reset voice detection timeouts
+                            clearTimeout(noVoiceTimeout);
+                            clearTimeout(unclearTimeout);
+                            noVoiceTimeout = setTimeout(() => {
+                                message.textContent = "No voice heard. Are you still here?";
+                                message.style.color = '#dc2626';
+                            }, 5000);
+                        } else if (received.is_final) {
+                            // Handle unclear/no speech detected
+                            clearTimeout(unclearTimeout);
+                            unclearTimeout = setTimeout(() => {
+                                message.textContent = "Unclear voice input! Kindly speak clearly.";
+                                message.style.color = '#dc2626';
+                            }, 2000);
                         }
                     };
 
                     socket.onclose = () => {
                         if (isRecording) {
                             message.textContent = "Connection closed unexpectedly";
+                            message.style.color = '#dc2626';
                         }
                     };
 
                     socket.onerror = (error) => {
                         message.textContent = "Error: " + error.message;
+                        message.style.color = '#dc2626';
                     };
 
                 } catch (error) {
                     console.error('Error accessing microphone:', error);
                     message.textContent = "Error accessing microphone";
+                    message.style.color = '#dc2626';
                 }
             }
         }
@@ -364,6 +396,7 @@
         function discardJournal() {
             entry.value = "";
             entry.disabled = false;
+            message.textContent = "";
         }
 
         function signOut() {
