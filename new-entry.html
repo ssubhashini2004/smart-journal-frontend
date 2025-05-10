@@ -344,7 +344,7 @@
                             clearTimeout(noVoiceTimeout);
                             clearTimeout(unclearTimeout);
                             noVoiceTimeout = setTimeout(() => {
-                                message.textContent = "No voice heard. Are you still here?";
+                                message.textContent = "No/unclear voice heard. Are you still here?";
                                 message.style.color = '#dc2626';
                             }, 5000);
                         } else if (received.is_final) {
@@ -384,7 +384,7 @@
 
         async function saveJournal() {
             const content = entry.value.trim();
-            if (!content) return alert("Please add some content.");
+            if (!content) return alert("No voice input detected. Please click on Start Recording and pour your thoughts!");
 
             const res = await fetch(`${API}/journals/add`, {
                 method: "POST",
