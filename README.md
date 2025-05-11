@@ -1,4 +1,5 @@
 **Voice Journal 🎤📔**
+
 A voice-first journaling app that organizes your spoken thoughts into structured entries. Speak freely, and let the app handle categorization, formatting, and storage. Built with HTMl, CSS, JS and React and integrated with speech-to-text APIs.
 
 **Introduction**
@@ -49,6 +50,7 @@ Want a specific entry? Search for keywords to extract that entry:
 
 
 **Features ✨**
+
 Voice-to-Text Conversion: Speak naturally, and the app transcribes your thoughts in real-time.
 
 Entry Organization: Auto-tagging of entries by date, mood, or custom categories.
@@ -60,6 +62,7 @@ Search: Find past entries by keywords or tags.
 Responsive Design: Works seamlessly on desktop and mobile.
 
 **Tech Stack 🛠️**
+
 **Frontend:** HTML, Tailwind CSS, JavaScript, React
 
 **Voice Input**: Deepgram API
@@ -77,6 +80,7 @@ Backend on Render
 Connected via RESTful APIs
 
 **Installation ⚙️**
+
 Clone the repository:
 
 bash
@@ -94,6 +98,7 @@ cd smart-journal-frontend
 
 
 **Usage 🗣️**
+
 Start Recording: Click the microphone button and speak.
 
 Review Transcription: Edit the auto-generated text if needed.
@@ -103,6 +108,7 @@ Save Entry: Add tags/categories and save to your journal.
 Browse History: Filter entries by date, tags, or keywords.
 
 **Contributing 🤝**
+
 Fork the repository.
 
 Create a branch: git checkout -b feature/your-feature.
