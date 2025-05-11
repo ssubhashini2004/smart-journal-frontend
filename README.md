@@ -1,8 +1,8 @@
-**Voice Journal 🎤📔**
+## Voice Journal 🎤📔
 
 A voice-first journaling app that organizes your spoken thoughts into structured entries. Speak freely, and let the app handle categorization, formatting, and storage. Built with HTMl, CSS, JS and React and integrated with speech-to-text APIs.
 
-**Introduction**
+## Introduction
 
 In a world where ideas strike faster than we can type, Voice Journal reimagines journaling by prioritizing speed, accessibility, and clarity. Whether you’re journaling during your morning commute, reflecting on a project, or capturing fleeting inspiration, this app:
 
@@ -19,7 +19,7 @@ Built with HTML, CSS, JS and React.js and integrated with speech-to-text service
 **🔗 Backend Repository:** [https://github.com/ssubhashini2004/server/]
 
 
-**Demo Screenshots - Experience the UI**
+## Demo Screenshots - Experience the UI
 
 Personalised Themes Resembling the conventional Light and Dark Modes
 
@@ -49,7 +49,7 @@ Want a specific entry? Search for keywords to extract that entry:
 ![image](https://github.com/user-attachments/assets/40c52b87-21b7-45a8-a07b-df5d0f6b4b31)
 
 
-**Features ✨**
+## Features ✨
 
 Voice-to-Text Conversion: Speak naturally, and the app transcribes your thoughts in real-time.
 
@@ -61,7 +61,8 @@ Search: Find past entries by keywords or tags.
 
 Responsive Design: Works seamlessly on desktop and mobile.
 
-**Tech Stack 🛠️**
+
+## Tech Stack 🛠️
 
 **Frontend:** HTML, Tailwind CSS, JavaScript, React
 
@@ -79,7 +80,8 @@ Backend on Render
 
 Connected via RESTful APIs
 
-**Installation ⚙️**
+
+## Installation ⚙️
 
 Clone the repository:
 
@@ -88,7 +90,7 @@ git clone https://github.com/ssubhashini2004/smart-journal-frontend.git
 
 cd smart-journal-frontend
 
-**User-Centric Design**'
+## User-Centric Design
 
 **📱 Mobile-Optimized UI:** Record and browse entries seamlessly on any device.
 
@@ -97,7 +99,7 @@ cd smart-journal-frontend
 **📤 Export Options:** Download entries as PDF or Markdown for offline access.
 
 
-**Usage 🗣️**
+## Usage 🗣️
 
 Start Recording: Click the microphone button and speak.
 
@@ -107,7 +109,7 @@ Save Entry: Add tags/categories and save to your journal.
 
 Browse History: Filter entries by date, tags, or keywords.
 
-**Contributing 🤝**
+## Contributing 🤝
 
 Fork the repository.
 
