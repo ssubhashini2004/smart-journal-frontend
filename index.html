@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <title>Smart Journal - Login</title>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preload" href="https://cdn.tailwindcss.com" as="style">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -21,28 +24,34 @@
             }
         }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Fallback styles */
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         :root {
-            --background-image: url('background1.png');
+            --background-image: url('./background1.png');
         }
 
         .dark {
-            --background-image: url('background.png');
+            --background-image: url('./background.png');
         }
     </style>
 </head>
 
 <body class="flex items-center justify-center min-h-screen">
-    <div
-        class="fixed inset-0 bg-[image:var(--background-image)] bg-cover bg-center bg-no-repeat transition-all duration-300">
-    </div>
-    <div class="fixed inset-0 bg-black/30 dark:bg-black/60 transition-all duration-300"></div>
+    <div class="fixed inset-0 bg-[image:var(--background-image)] bg-cover bg-center bg-no-repeat"></div>
+    <div class="fixed inset-0 bg-black/30 dark:bg-black/60"></div>
 
-    <div
-        class="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-2xl w-full max-w-md mx-4 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 relative z-10 border border-gray-100 dark:border-gray-600">
+    <div class="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-2xl w-full max-w-md mx-4 relative z-50">
         <button id="themeToggle" onclick="toggleTheme()"
-            class="absolute top-4 right-4 p-2 rounded-full bg-white/90 dark:bg-gray-700 shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-600">
+            class="absolute top-4 right-4 p-2 rounded-full bg-white/90 dark:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-600">
             <svg id="sunIcon" class="w-6 h-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
@@ -55,8 +64,8 @@
         </button>
 
         <div class="flex flex-col items-center">
-            <img src="logo.png" alt="Logo"
-                class="w-28 h-28 mb-6 rounded-full border-4 border-white dark:border-gray-800 shadow-lg transform hover:scale-105 transition-transform" />
+            <img src="./logo.png" alt="Logo"
+                class="w-28 h-28 mb-6 rounded-full border-4 border-white dark:border-gray-800">
             <h1
                 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                 Smart Journal
@@ -67,17 +76,17 @@
             <form class="w-full space-y-6">
                 <div>
                     <input id="email" type="email" placeholder="Email"
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-400 bg-white dark:bg-gray-700 dark:text-gray-200"
-                        required />
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-gray-200"
+                        required>
                 </div>
                 <div>
                     <input id="password" type="password" placeholder="Password"
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-400 bg-white dark:bg-gray-700 dark:text-gray-200"
-                        required />
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-gray-200"
+                        required>
                 </div>
 
                 <button id="loginBtn" onclick="login()" type="button"
-                    class="w-full bg-gradient-to-r from-blue-600 to-green-600 dark:from-blue-700 dark:to-green-700 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all">
+                    class="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-lg">
                     Login
                 </button>
             </form>
@@ -94,7 +103,7 @@
             <p class="mt-8 text-gray-600 dark:text-gray-300 text-sm">
                 New here?
                 <a href="signup.html"
-                    class="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+                    class="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300">
                     Create an account
                 </a>
             </p>
@@ -108,47 +117,39 @@
             const isDark = document.documentElement.classList.contains('dark');
             document.documentElement.style.setProperty(
                 '--background-image',
-                isDark ? "url('background.png')" : "url('background1.png')"
+                `url('./${isDark ? 'background.png' : 'background1.png'}')`
             );
         }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.className = savedTheme;
-
-            const sunIcon = document.getElementById('sunIcon');
-            const moonIcon = document.getElementById('moonIcon');
-            if (savedTheme === 'dark') {
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            } else {
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            }
+            updateThemeIcons(savedTheme);
             updateBackground();
+        }
+
+        function updateThemeIcons(theme) {
+            document.getElementById('sunIcon').classList.toggle('hidden', theme === 'dark');
+            document.getElementById('moonIcon').classList.toggle('hidden', theme !== 'dark');
         }
 
         function toggleTheme() {
-            const htmlEl = document.documentElement;
-            const isDark = htmlEl.classList.contains('dark');
-            const sunIcon = document.getElementById('sunIcon');
-            const moonIcon = document.getElementById('moonIcon');
-
-            if (isDark) {
-                htmlEl.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            } else {
-                htmlEl.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            }
+            const currentTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+            document.documentElement.className = currentTheme;
+            localStorage.setItem('theme', currentTheme);
+            updateThemeIcons(currentTheme);
             updateBackground();
         }
 
-        initTheme();
+        // Initialize after page loads
+        window.addEventListener('load', () => {
+            initTheme();
+            console.log('Assets verification:', {
+                background: document.createElement('img').src = './background.png',
+                background1: document.createElement('img').src = './background1.png',
+                logo: document.createElement('img').src = './logo.png'
+            });
+        });
 
         const API = "https://server-dsgo.onrender.com/api";
         async function login() {
@@ -158,10 +159,10 @@
             const loginBtn = document.getElementById("loginBtn");
 
             message.innerHTML = `<svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                 </svg>
-                                 <span class="text-blue-600 dark:text-blue-400">Authenticating...</span>`;
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg> Authenticating...`;
+
             loginBtn.disabled = true;
             loginBtn.classList.add("opacity-50", "cursor-not-allowed");
 
@@ -173,7 +174,6 @@
                 });
 
                 const data = await res.json();
-
                 if (data.userId) {
                     localStorage.setItem("userId", data.userId);
                     window.location.href = "journal.html";
@@ -188,7 +188,7 @@
             loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
         }
     </script>
-    <footer>
+    <footer class="fixed bottom-0 w-full text-center p-4 text-gray-600 dark:text-gray-300">
         S Subhashini Copyright 2025
     </footer>
 </body>
